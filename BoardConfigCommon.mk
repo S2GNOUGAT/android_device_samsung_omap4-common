@@ -25,6 +25,12 @@ TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 TARGET_RELEASE_CPPFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
 COMMON_GLOBAL_CFLAGS += -DREFBASE_JB_MR1_COMPAT_SYMBOLS
 
+# Dex Pre-opt
+WITH_DEXPREOPT := true
+
+# Use dlmalloc
+MALLOC_IMPL := dlmalloc
+
 # CPU
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
@@ -43,19 +49,16 @@ EXTENDED_FONT_FOOTPRINT := true
 # Platform
 TARGET_BOARD_PLATFORM := omap4
 
+# We don't support cursor layers, which when attempting to use them,
+# results in no cursors (mouse or otherwise) displayed on the screen.
+TARGET_DISABLE_CURSOR_LAYER := true
+
 # RIL
-BOARD_PROVIDES_LIBRIL := true
-BOARD_MODEM_TYPE := xmm6260
 BOARD_RIL_CLASS := ../../../device/samsung/omap4-common/ril
 
 # HWComposer
 BOARD_USES_HWCOMPOSER := true
-BOARD_USE_CUSTOM_HWC := true
 BOARD_USE_SYSFS_VSYNC_NOTIFICATION := true
-# set if the target supports FBIO_WAITFORVSYNC
-TARGET_HAS_WAITFORVSYNC := true
-
-TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 
 # Setup custom omap4xxx defines
 BOARD_USE_CUSTOM_LIBION := true
@@ -84,15 +87,6 @@ OMAP_ENHANCEMENT := true
 #OMAP_ENHANCEMENT_VTC := true
 OMAP_ENHANCEMENT_MULTIGPU := true
 #BOARD_USE_TI_ENHANCED_DOMX := true
-
-# External SGX Module
-SGX_MODULES:
-	make clean -C $(COMMON_PATH)/pvr-source/eurasiacon/build/linux2/omap4430_android
-	cp $(TARGET_KERNEL_SOURCE)/drivers/video/omap2/omapfb/omapfb.h $(KERNEL_OUT)/drivers/video/omap2/omapfb/omapfb.h
-	make -j8 -C $(COMMON_PATH)/pvr-source/eurasiacon/build/linux2/omap4430_android ARCH=arm KERNEL_CROSS_COMPILE=arm-eabi- CROSS_COMPILE=arm-eabi- KERNELDIR=$(KERNEL_OUT) TARGET_PRODUCT="blaze_tablet" BUILD=release TARGET_SGX=540 PLATFORM_VERSION=4.0
-	mv $(KERNEL_OUT)/../../target/kbuild/pvrsrvkm_sgx540_120.ko $(KERNEL_MODULES_OUT)
-
-TARGET_KERNEL_MODULES += SGX_MODULES
 
 # TI Enhancement Settings (Part 2)
 ifdef BOARD_USE_TI_ENHANCED_DOMX
