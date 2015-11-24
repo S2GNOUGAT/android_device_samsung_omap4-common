@@ -58,6 +58,7 @@ BOARD_RIL_CLASS := ../../../device/samsung/omap4-common/ril
 
 # HWComposer
 BOARD_USES_HWCOMPOSER := true
+BOARD_USE_CUSTOM_HWC := true
 BOARD_USE_SYSFS_VSYNC_NOTIFICATION := true
 
 # Setup custom omap4xxx defines
