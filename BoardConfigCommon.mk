@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
+# Inherit common omap4 board config
+-include hardware/ti/omap4/BoardConfigCommon.mk
+
 COMMON_PATH := device/samsung/omap4-common
-
 BOARD_VENDOR := samsung
-
-PRODUCT_VENDOR_KERNEL_HEADERS := $(COMMON_PATH)/kernel-headers
 TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 
 # Camera
-TARGET_RELEASE_CPPFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
-COMMON_GLOBAL_CFLAGS += -DREFBASE_JB_MR1_COMPAT_SYMBOLS
+#TARGET_RELEASE_CPPFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+#COMMON_GLOBAL_CFLAGS += -DREFBASE_JB_MR1_COMPAT_SYMBOLS
 
 # Dex Pre-opt
 WITH_DEXPREOPT := true
@@ -31,23 +31,8 @@ WITH_DEXPREOPT := true
 # Use dlmalloc
 MALLOC_IMPL := dlmalloc
 
-# CPU
-TARGET_CPU_ABI := armeabi-v7a
-TARGET_CPU_ABI2 := armeabi
-TARGET_CPU_SMP := true
-TARGET_ARCH := arm
-TARGET_ARCH_VARIANT := armv7-a-neon
-TARGET_ARCH_VARIANT_CPU := cortex-a9
-TARGET_CPU_VARIANT := cortex-a9
-ARCH_ARM_HAVE_TLS_REGISTER := true
-TARGET_GLOBAL_CFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
-TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
-
 #Fonts
 EXTENDED_FONT_FOOTPRINT := true
-
-# Platform
-TARGET_BOARD_PLATFORM := omap4
 
 # We don't support cursor layers, which when attempting to use them,
 # results in no cursors (mouse or otherwise) displayed on the screen.
@@ -56,65 +41,9 @@ TARGET_DISABLE_CURSOR_LAYER := true
 # RIL
 BOARD_RIL_CLASS := ../../../device/samsung/omap4-common/ril
 
-# HWComposer
-BOARD_USES_HWCOMPOSER := true
-BOARD_USE_CUSTOM_HWC := true
-BOARD_USE_SYSFS_VSYNC_NOTIFICATION := true
-
-# Setup custom omap4xxx defines
-BOARD_USE_CUSTOM_LIBION := true
-
 # SELinux
 BOARD_SEPOLICY_DIRS += \
     device/samsung/omap4-common/sepolicy
-
-# TI Enhancement Settings (Part 1)
-OMAP_ENHANCEMENT := true
-#OMAP_ENHANCEMENT_BURST_CAPTURE := true
-#OMAP_ENHANCEMENT_S3D := true
-#OMAP_ENHANCEMENT_CPCAM := true
-#OMAP_ENHANCEMENT_VTC := true
-OMAP_ENHANCEMENT_MULTIGPU := true
-#BOARD_USE_TI_ENHANCED_DOMX := true
-
-# TI Enhancement Settings (Part 2)
-ifdef BOARD_USE_TI_ENHANCED_DOMX
-    BOARD_USE_TI_DUCATI_H264_PROFILE := true
-    COMMON_GLOBAL_CFLAGS += -DENHANCED_DOMX
-    ENHANCED_DOMX := true
-else
-    DOMX_PATH := hardware/ti/omap4xxx/domx
-endif
-
-ifdef OMAP_ENHANCEMENT
-    COMMON_GLOBAL_CFLAGS += -DOMAP_ENHANCEMENT -DTARGET_OMAP4
-    COMMON_GLOBAL_CFLAGS += -DFORCE_SCREENSHOT_CPU_PATH
-endif
-
-ifdef OMAP_ENHANCEMENT_BURST_CAPTURE
-    COMMON_GLOBAL_CFLAGS += -DOMAP_ENHANCEMENT_BURST_CAPTURE
-endif
-
-ifdef OMAP_ENHANCEMENT_S3D
-    COMMON_GLOBAL_CFLAGS += -DOMAP_ENHANCEMENT_S3D
-endif
-
-ifdef OMAP_ENHANCEMENT_CPCAM
-    COMMON_GLOBAL_CFLAGS += -DOMAP_ENHANCEMENT_CPCAM
-    PRODUCT_MAKEFILES += $(LOCAL_DIR)/sdk_addon/ti_omap_addon.mk
-endif
-
-ifdef OMAP_ENHANCEMENT_VTC
-    COMMON_GLOBAL_CFLAGS += -DOMAP_ENHANCEMENT_VTC
-endif
-
-ifdef USE_ITTIAM_AAC
-    COMMON_GLOBAL_CFLAGS += -DUSE_ITTIAM_AAC
-endif
-
-ifdef OMAP_ENHANCEMENT_MULTIGPU
-    COMMON_GLOBAL_CFLAGS += -DOMAP_ENHANCEMENT_MULTIGPU
-endif
 
 # inherit from the proprietary version
 -include vendor/samsung/omap4-common/BoardConfigVendor.mk

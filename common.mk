@@ -14,20 +14,16 @@
 # limitations under the License.
 #
 
+# Include common omap4 makefile
+$(call inherit-product, hardware/ti/omap4/omap4.mk)
+
 COMMON_PATH := device/samsung/omap4-common
 
 DEVICE_PACKAGE_OVERLAYS += $(COMMON_PATH)/overlay
 
 # Omap4 Packages
 PRODUCT_PACKAGES += \
-    libedid \
-    libion_ti \
-    libstagefrighthw \
-    smc_pa_ctrl \
-    tf_daemon \
-    libcorkscrew \
-    pvrsrvinit \
-    libPVRScopeServices.so
+    libedid
 
 PRODUCT_PACKAGES += \
     audio.a2dp.default \
@@ -40,27 +36,32 @@ PRODUCT_PACKAGES += \
     tinymix
 
 # Filesystem management tools
-PRODUCT_PACKAGES += \
-    static_busybox \
-    make_ext4fs \
-    setup_fs
+#PRODUCT_PACKAGES += \
+#    make_ext4fs \
+#    setup_fs
+#    static_busybox \
 
+    
+# Samsung symbols
+PRODUCT_PACKAGES += \
+    libsamsung_symbols
+    
 PRODUCT_PROPERTY_OVERRIDES += \
-    com.ti.omap_enhancement=true \
-    omap.enhancement=true \
     ro.telephony.ril_class=SamsungOmap4RIL \
     ro.telephony.call_ring.multiple=false \
     ro.telephony.call_ring.delay=3000 \
-    ro.bq.gpu_to_cpu_unsupported=1 \
-    camera2.portability.force_api=1
+    ro.bq.gpu_to_cpu_unsupported=1 
+#    com.ti.omap_enhancement=true \
+#    omap.enhancement=true \
+#    camera2.portability.force_api=1
 
 # Set default USB interface
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    persist.sys.usb.config=mtp
+#PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+#    persist.sys.usb.config=mtp
 
 # USB-OTG
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.sys.isUsbOtgEnabled=true
+#PRODUCT_PROPERTY_OVERRIDES += \
+#    persist.sys.isUsbOtgEnabled=true
 
 # Include non-opensource parts
 $(call inherit-product, vendor/samsung/omap4-common/common-vendor.mk)
