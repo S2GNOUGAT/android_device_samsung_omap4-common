@@ -17,6 +17,8 @@
 # Include common omap4 makefile
 $(call inherit-product, hardware/ti/omap4/omap4.mk)
 
+$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
+
 COMMON_PATH := device/samsung/omap4-common
 
 DEVICE_PACKAGE_OVERLAYS += $(COMMON_PATH)/overlay
