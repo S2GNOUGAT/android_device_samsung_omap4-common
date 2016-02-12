@@ -44,9 +44,15 @@ PRODUCT_PACKAGES += \
 #    static_busybox \
 
     
-# Samsung symbols
+# Samsung symbols & S2 ril-wrapper
 PRODUCT_PACKAGES += \
-    libsamsung_symbols
+    libsamsung_symbols \
+    ril-wrapper
+
+# Misc S2
+PRODUCT_PACKAGES += \
+    com.android.future.usb.accessory \
+    SamsungServiceMode
     
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SamsungOmap4RIL \
