@@ -38,11 +38,9 @@ PRODUCT_PACKAGES += \
     tinymix
 
 # Filesystem management tools
-#PRODUCT_PACKAGES += \
-#    make_ext4fs \
-#    setup_fs
-#    static_busybox \
-
+PRODUCT_PACKAGES += \
+    make_ext4fs \
+    setup_fs
     
 # Samsung symbols & S2 ril-wrapper
 PRODUCT_PACKAGES += \
@@ -58,18 +56,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SamsungOmap4RIL \
     ro.telephony.call_ring.multiple=false \
     ro.telephony.call_ring.delay=3000 \
-    ro.bq.gpu_to_cpu_unsupported=1 
+    ro.bq.gpu_to_cpu_unsupported=1  
+#    camera2.portability.force_api=1
 #    com.ti.omap_enhancement=true \
 #    omap.enhancement=true \
-#    camera2.portability.force_api=1
-
-# Set default USB interface
-#PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-#    persist.sys.usb.config=mtp
-
-# USB-OTG
-#PRODUCT_PROPERTY_OVERRIDES += \
-#    persist.sys.isUsbOtgEnabled=true
 
 # Include non-opensource parts
 $(call inherit-product, vendor/samsung/omap4-common/common-vendor.mk)

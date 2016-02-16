@@ -119,7 +119,6 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
     static final int RIL_UNSOL_UTS_GET_UNREAD_SMS_STATUS = 11031;
     static final int RIL_UNSOL_MIP_CONNECT_STATUS = 11032;
 
-    private boolean setPreferredNetworkTypeSeen = false;
     private Object mCatProCmdBuffer;
 
     public SamsungOmap4RIL(Context context, int preferredNetworkType, int cdmaSubscription, Integer instanceid) {
@@ -437,19 +436,6 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
     }
 
     @Override
-    public void setPreferredNetworkType(int networkType , Message response) {
-        riljLog("setPreferredNetworkType: " + networkType);
-
-        if (!setPreferredNetworkTypeSeen) {
-            riljLog("Need to reboot modem!");
-            setRadioPower(false, null);
-            setPreferredNetworkTypeSeen = true;
-        }
-
-        super.setPreferredNetworkType(networkType, response);
-    }
-
-    @Override
     public void getRadioCapability(Message response) {
         riljLog("getRadioCapability: returning static radio capability");
         if (response != null) {
@@ -457,24 +443,6 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
             AsyncResult.forMessage(response, ret, null);
             response.sendToTarget();
         }
-    }
-
-    protected Object
-    responseFailCause(Parcel p) {
-        int numInts;
-        int response[];
-
-        numInts = p.readInt();
-        response = new int[numInts];
-        for (int i = 0 ; i < numInts ; i++) {
-            response[i] = p.readInt();
-        }
-        LastCallFailCause failCause = new LastCallFailCause();
-        failCause.causeCode = response[0];
-        if (p.dataAvail() > 0) {
-          failCause.vendorCause = p.readString();
-        }
-        return failCause;
     }
 
 }

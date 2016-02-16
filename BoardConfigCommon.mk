@@ -22,11 +22,11 @@ BOARD_VENDOR := samsung
 TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 
 # Camera
-TARGET_RELEASE_CPPFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
-COMMON_GLOBAL_CFLAGS += -DREFBASE_JB_MR1_COMPAT_SYMBOLS
+# TARGET_RELEASE_CPPFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+# COMMON_GLOBAL_CFLAGS += -DREFBASE_JB_MR1_COMPAT_SYMBOLS
 
 # Dex Pre-opt
-WITH_DEXPREOPT := true
+# WITH_DEXPREOPT := true
 
 # Use dlmalloc
 MALLOC_IMPL := dlmalloc
@@ -36,7 +36,7 @@ EXTENDED_FONT_FOOTPRINT := true
 
 # We don't support cursor layers, which when attempting to use them,
 # results in no cursors (mouse or otherwise) displayed on the screen.
-TARGET_DISABLE_CURSOR_LAYER := true
+# TARGET_DISABLE_CURSOR_LAYER := true
 
 # RIL
 BOARD_RIL_CLASS := ../../../device/samsung/omap4-common/ril
