@@ -125,7 +125,7 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
         super(context, preferredNetworkType, cdmaSubscription, instanceid);
         mQANElements = 5;
     }
-    
+
     public SamsungOmap4RIL(Context context, int preferredNetworkType, int cdmaSubscription) {
         super(context, preferredNetworkType, cdmaSubscription, null);
     }

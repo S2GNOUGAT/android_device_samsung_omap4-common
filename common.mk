@@ -42,13 +42,13 @@ PRODUCT_PACKAGES += \
     make_ext4fs \
     setup_fs
     
-# Samsung symbols & S2 ril-wrapper
+# Samsung symbols
 PRODUCT_PACKAGES += \
-    libsamsung_symbols \
-    ril-wrapper
-
+    libsamsung_symbols
+    
 # Misc S2
 PRODUCT_PACKAGES += \
+    librs_jni \
     com.android.future.usb.accessory \
     SamsungServiceMode
     
@@ -56,8 +56,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SamsungOmap4RIL \
     ro.telephony.call_ring.multiple=false \
     ro.telephony.call_ring.delay=3000 \
-    ro.bq.gpu_to_cpu_unsupported=1  
-#    camera2.portability.force_api=1
+    ro.bq.gpu_to_cpu_unsupported=1 \
+    camera2.portability.force_api=1
 #    com.ti.omap_enhancement=true \
 #    omap.enhancement=true \
 
