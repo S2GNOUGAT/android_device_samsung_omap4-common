@@ -41,7 +41,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     make_ext4fs \
     setup_fs
-    
+
+# RIL
+PRODUCT_PACKAGES += \
+    libxml2
+
 # Samsung symbols
 PRODUCT_PACKAGES += \
     libsamsung_symbols \
