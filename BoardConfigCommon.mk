@@ -32,7 +32,7 @@ TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 MALLOC_IMPL := dlmalloc
 
 #Fonts
-EXTENDED_FONT_FOOTPRINT := true
+# EXTENDED_FONT_FOOTPRINT := true
 
 # We don't support cursor layers, which when attempting to use them,
 # results in no cursors (mouse or otherwise) displayed on the screen.
