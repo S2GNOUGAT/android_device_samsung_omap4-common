@@ -44,6 +44,7 @@ PRODUCT_PACKAGES += \
 
 # RIL
 PRODUCT_PACKAGES += \
+    libsecril-client \
     libxml2
 
 # Samsung symbols
