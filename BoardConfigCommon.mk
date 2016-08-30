@@ -30,6 +30,7 @@ TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 
 # Use dlmalloc
 MALLOC_IMPL := dlmalloc
+TARGET_NEEDS_TEXT_RELOCATIONS := true
 
 #Fonts
 # EXTENDED_FONT_FOOTPRINT := true
