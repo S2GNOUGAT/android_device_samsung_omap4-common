@@ -51,7 +51,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libsamsung_symbols \
     ril-wrapper
-    
+
 # Misc S2
 PRODUCT_PACKAGES += \
     librs_jni \
