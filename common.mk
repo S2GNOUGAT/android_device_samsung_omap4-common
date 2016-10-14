@@ -57,7 +57,11 @@ PRODUCT_PACKAGES += \
     librs_jni \
     com.android.future.usb.accessory \
     SamsungServiceMode
-    
+
+# Remove Packages
+PRODUCT_PACKAGES += \
+    RemoveAudioFX
+
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SamsungOmap4RIL \
     ro.telephony.call_ring.multiple=false \
