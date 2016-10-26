@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define LOG_TAG "TI OMAP PowerHAL"
+#define LOG_TAG "Omap PowerHAL"
 #include <utils/Log.h>
 
 #include <hardware/hardware.h>
@@ -28,13 +28,13 @@
 #define CPUFREQ_INTERACTIVE "/sys/devices/system/cpu/cpufreq/interactive/"
 #define CPUFREQ_CPU0 "/sys/devices/system/cpu/cpu0/cpufreq/"
 #define BOOSTPULSE_PATH (CPUFREQ_INTERACTIVE "boostpulse")
+#define SCALINGMAXFREQ_PATH (CPUFREQ_CPU0 "scaling_max_freq")
 
-#define MAX_FREQ_NUMBER 10
-#define NOM_FREQ_INDEX 2
+#define MAX_BUF_SZ  10
 
-static int freq_num;
-static char *freq_list[MAX_FREQ_NUMBER];
-static char *max_freq, *nom_freq;
+/* initialize to something safe */
+static char screen_off_max_freq[MAX_BUF_SZ] = "600000";
+static char scaling_max_freq[MAX_BUF_SZ] = "1200000";
 
 struct omap_power_module {
     struct power_module base;
@@ -44,27 +44,8 @@ struct omap_power_module {
     int inited;
 };
 
-static int str_to_tokens(char *str, char **token, int max_token_idx) {
-    char *pos, *start_pos = str;
-    char *token_pos;
-    int token_idx = 0;
-
-    if (!str || !token || !max_token_idx) {
-        return 0;
-    }
-
-    do {
-        token_pos = strtok_r(start_pos, " \t\r\n", &pos);
-
-        if (token_pos)
-            token[token_idx++] = strdup(token_pos);
-        start_pos = NULL;
-    } while (token_pos && token_idx < max_token_idx);
-
-    return token_idx;
-}
-
-static void sysfs_write(char *path, char *s) {
+static void sysfs_write(char *path, char *s)
+{
     char buf[80];
     int len;
     int fd = open(path, O_WRONLY);
@@ -84,110 +65,112 @@ static void sysfs_write(char *path, char *s) {
     close(fd);
 }
 
-static int sysfs_read(char *path, char *s, int s_size) {
-    char buf[80];
-    int len, i;
-    int fd;
+int sysfs_read(const char *path, char *buf, size_t size)
+{
+  int fd, len;
 
-    if (!path || !s || !s_size) {
-        return -1;
-    }
+  fd = open(path, O_RDONLY);
+  if (fd < 0)
+    return -1;
 
-    fd = open(path, O_RDONLY);
-    if (fd < 0) {
-        strerror_r(errno, buf, sizeof(buf));
-        ALOGE("Error opening %s: %s\n", path, buf);
-        return fd;
-    }
+  do {
+    len = read(fd, buf, size);
+  } while (len < 0 && errno == EINTR);
 
-    len = read(fd, s, s_size-1);
-    if (len < 0) {
-        strerror_r(errno, buf, sizeof(buf));
-        ALOGE("Error reading from %s: %s\n", path, buf);
-    } else {
-        s[len] = '\0';
-    }
+  close(fd);
 
-    close(fd);
-    return len;
+  return len;
 }
 
-static void omap_power_init(struct power_module *module) {
-    struct omap_power_module *omap_device = (struct omap_power_module *) module;
-    int tmp;
-    char freq_buf[MAX_FREQ_NUMBER*10];
-
-    tmp = sysfs_read(CPUFREQ_CPU0 "scaling_available_frequencies", freq_buf, sizeof(freq_buf));
-    if (tmp <= 0) {
-        return;
-    }
-
-    freq_num = str_to_tokens(freq_buf, freq_list, MAX_FREQ_NUMBER);
-    if (!freq_num) {
-        return;
-    }
-
-    max_freq = freq_list[freq_num - 1];
-    tmp = (NOM_FREQ_INDEX > freq_num) ? freq_num : NOM_FREQ_INDEX;
-    nom_freq = freq_list[tmp - 1];
+static void omap_power_init(struct power_module *module)
+{
+    struct omap_power_module *omap = (struct omap_power_module *) module;
 
     sysfs_write(CPUFREQ_INTERACTIVE "timer_rate", "20000");
-    sysfs_write(CPUFREQ_INTERACTIVE "min_sample_time","60000");
-    sysfs_write(CPUFREQ_INTERACTIVE "hispeed_freq", nom_freq);
-    sysfs_write(CPUFREQ_INTERACTIVE "go_hispeed_load", "50");
-    sysfs_write(CPUFREQ_INTERACTIVE "above_hispeed_delay", "100000");
+    sysfs_write(CPUFREQ_INTERACTIVE "min_sample_time", "60000");
+    sysfs_write(CPUFREQ_INTERACTIVE "hispeed_freq", "800000");
+    sysfs_write(CPUFREQ_INTERACTIVE "target_loads", "70 800000:80 1200000:99");
+    sysfs_write(CPUFREQ_INTERACTIVE "go_hispeed_load", "99");
+    sysfs_write(CPUFREQ_INTERACTIVE "above_hispeed_delay", "80000");
 
     ALOGI("Initialized successfully");
-    omap_device->inited = 1;
+    omap->inited = 1;
 }
 
-static int boostpulse_open(struct omap_power_module *omap_device) {
+static int boostpulse_open(struct omap_power_module *omap)
+{
     char buf[80];
 
-    pthread_mutex_lock(&omap_device->lock);
+    pthread_mutex_lock(&omap->lock);
 
-    if (omap_device->boostpulse_fd < 0) {
-        omap_device->boostpulse_fd = open(BOOSTPULSE_PATH, O_WRONLY);
+    if (omap->boostpulse_fd < 0) {
+        omap->boostpulse_fd = open(BOOSTPULSE_PATH, O_WRONLY);
 
-        if (omap_device->boostpulse_fd < 0) {
-            if (!omap_device->boostpulse_warned) {
+        if (omap->boostpulse_fd < 0) {
+            if (!omap->boostpulse_warned) {
                 strerror_r(errno, buf, sizeof(buf));
                 ALOGE("Error opening %s: %s\n", BOOSTPULSE_PATH, buf);
-                omap_device->boostpulse_warned = 1;
+                omap->boostpulse_warned = 1;
             }
         }
     }
 
-    pthread_mutex_unlock(&omap_device->lock);
-    return omap_device->boostpulse_fd;
+    pthread_mutex_unlock(&omap->lock);
+    return omap->boostpulse_fd;
 }
 
-static void omap_power_set_interactive(struct power_module *module, int on) {
-    struct omap_power_module *omap_device = (struct omap_power_module *) module;
+static void omap_power_set_interactive(struct power_module *module, int on)
+{
+    struct omap_power_module *omap = (struct omap_power_module *) module;
+    int len;
+    char buf[MAX_BUF_SZ];
 
-    if (!omap_device->inited)
+    if (!omap->inited) {
         return;
+    }
 
     /*
      * Lower maximum frequency when screen is off.  CPU 0 and 1 share a
      * cpufreq policy.
      */
+    if (!on) {
+        /* read the current scaling max freq and save it before updating */
+        len = sysfs_read(SCALINGMAXFREQ_PATH, buf, sizeof(buf));
 
-    sysfs_write(CPUFREQ_CPU0 "scaling_max_freq", on ? max_freq : nom_freq);
+        /* make sure it's not the screen off freq, if the "on"
+         * call is skipped (can happen if you press the power
+         * button repeatedly) we might have read it. We should
+         * skip it if that's the case
+         */
+        if (len != -1 && strncmp(buf, screen_off_max_freq,
+                strlen(screen_off_max_freq)) != 0)
+            memcpy(scaling_max_freq, buf, sizeof(buf));
+        sysfs_write(SCALINGMAXFREQ_PATH, screen_off_max_freq);
+    } else
+        sysfs_write(SCALINGMAXFREQ_PATH, scaling_max_freq);
 }
 
-static void omap_power_hint(struct power_module *module, power_hint_t hint, void *data) {
-    struct omap_power_module *omap_device = (struct omap_power_module *) module;
+static void omap_power_hint(struct power_module *module, power_hint_t hint,
+                            void *data __unused)
+{
+    struct omap_power_module *omap = (struct omap_power_module *) module;
     char buf[80];
     int len;
+    int duration = 1;
 
-    if (!omap_device->inited)
+    if (!omap->inited) {
         return;
+    }
 
     switch (hint) {
     case POWER_HINT_INTERACTION:
-        if (boostpulse_open(omap_device) >= 0) {
-            len = write(omap_device->boostpulse_fd, "1", 1);
+    case POWER_HINT_CPU_BOOST:
+        if (data != NULL)
+            duration = (int) data;
+
+        if (boostpulse_open(omap) >= 0) {
+            snprintf(buf, sizeof(buf), "%d", duration);
+            len = write(omap->boostpulse_fd, buf, strlen(buf));
 
             if (len < 0) {
                 strerror_r(errno, buf, sizeof(buf));
@@ -215,14 +198,14 @@ struct omap_power_module HAL_MODULE_INFO_SYM = {
             .module_api_version = POWER_MODULE_API_VERSION_0_2,
             .hal_api_version = HARDWARE_HAL_API_VERSION,
             .id = POWER_HARDWARE_MODULE_ID,
-            .name = "OMAP Power HAL",
+            .name = "Omap Power HAL",
             .author = "The Android Open Source Project",
             .methods = &power_module_methods,
         },
 
-       .init = omap_power_init,
-       .setInteractive = omap_power_set_interactive,
-       .powerHint = omap_power_hint,
+        .init = omap_power_init,
+        .setInteractive = omap_power_set_interactive,
+        .powerHint = omap_power_hint,
     },
 
     .lock = PTHREAD_MUTEX_INITIALIZER,
