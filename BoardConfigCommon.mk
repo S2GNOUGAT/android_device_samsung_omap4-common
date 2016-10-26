@@ -19,7 +19,6 @@
 
 COMMON_PATH := device/samsung/omap4-common
 BOARD_VENDOR := samsung
-TARGET_POWERHAL_VARIANT := samsung
 TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 
 # Dex Pre-opt
