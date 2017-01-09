@@ -30,12 +30,14 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     audio.a2dp.default \
     audio.usb.default \
+    audio.r_submix.default \
     libtinyalsa \
     libaudioutils \
     libnetcmdiface \
     tinyplay \
     tinycap \
-    tinymix
+    tinymix \
+    tinypcminfo
 
 # Filesystem management tools
 PRODUCT_PACKAGES += \
@@ -45,16 +47,13 @@ PRODUCT_PACKAGES += \
 # RIL
 PRODUCT_PACKAGES += \
     libsecril-client \
-    libxml2
-
-# Samsung symbols
-PRODUCT_PACKAGES += \
     libsamsung_symbols \
     ril-wrapper
 
 # Misc S2
 PRODUCT_PACKAGES += \
     librs_jni \
+    libxml2 \
     com.android.future.usb.accessory \
     SamsungServiceMode
 
