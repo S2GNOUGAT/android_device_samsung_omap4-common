@@ -135,7 +135,7 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
     }
 
     @Override
-    protected RILRequest processSolicited (Parcel p) {
+    protected RILRequest processSolicited (Parcel p, int type) {
         int serial, error;
         boolean found = false;
 
@@ -152,6 +152,18 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
             return null;
         }
 
+        if (getRilVersion() >= 13 && type == RESPONSE_SOLICITED_ACK_EXP) {
+            Message msg;
+            RILRequest response = RILRequest.obtain(RIL_RESPONSE_ACKNOWLEDGEMENT, null);
+            msg = mSender.obtainMessage(EVENT_SEND_ACK, response);
+            acquireWakeLock(rr, FOR_ACK_WAKELOCK);
+            msg.sendToTarget();
+            if (RILJ_LOGD) {
+                riljLog("Response received for " + rr.serialString() + " " +
+                        requestToString(rr.mRequest) + " Sending ack to ril.cpp");
+            }
+        }
+        
         Object ret = null;
 
         if (error == 0 || p.dataAvail() > 0) {
@@ -290,7 +302,6 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
             case RIL_REQUEST_SIM_OPEN_CHANNEL: ret  = responseInts(p); break;
             case RIL_REQUEST_SIM_CLOSE_CHANNEL: ret  = responseVoid(p); break;
             case RIL_REQUEST_SIM_TRANSMIT_APDU_CHANNEL: ret = responseICC_IO(p); break;
-            case RIL_REQUEST_SIM_GET_ATR: ret = responseString(p); break;
             case RIL_REQUEST_NV_READ_ITEM: ret = responseString(p); break;
             case RIL_REQUEST_NV_WRITE_ITEM: ret = responseVoid(p); break;
             case RIL_REQUEST_NV_WRITE_CDMA_PRL: ret = responseVoid(p); break;
@@ -440,9 +451,40 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
 
     @Override
     protected void
-    processUnsolicited (Parcel p) {
+    processUnsolicited (Parcel p, int type) {
         int dataPosition = p.dataPosition();
         int response = p.readInt();
+        Object ret;
+  		  
+        // Follow new symantics of sending an Ack starting from RIL version 13
+        if (getRilVersion() >= 13 && type == RESPONSE_UNSOLICITED_ACK_EXP) {
+            Message msg;
+            RILRequest rr = RILRequest.obtain(RIL_RESPONSE_ACKNOWLEDGEMENT, null);
+            msg = mSender.obtainMessage(EVENT_SEND_ACK, rr);
+            acquireWakeLock(rr, FOR_ACK_WAKELOCK);
+            msg.sendToTarget();
+            if (RILJ_LOGD) {
+                riljLog("Unsol response received for " + responseToString(response) +
+                        " Sending ack to ril.cpp");
+            }
+        }
+
+        try{switch(response) {
+            case RIL_UNSOL_STK_PROACTIVE_COMMAND: ret = responseString(p); break;
+            case RIL_UNSOL_STK_SEND_SMS_RESULT: ret = responseInts(p); break; // Samsung STK  
+            default:    
+                // Rewind the Parcel
+                p.setDataPosition(dataPosition);
+                
+                // Forward responses that we are not overriding to the super class
+                super.processUnsolicited(p, type);
+                return;
+                
+        }} catch (Throwable tr) {
+            Rlog.e(RILJ_LOG_TAG, "Exception processing unsol response: " + response +
+                   " Exception: " + tr.toString());
+            return;
+        }
 
         switch(response) {
             case RIL_UNSOL_STK_PROACTIVE_COMMAND: 
