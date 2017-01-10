@@ -50,6 +50,10 @@ PRODUCT_PACKAGES += \
     libsamsung_symbols \
     libsecril-shim
 
+# Legacy GPS
+PRODUCT_PACKAGES += \
+    gps.t1
+
 # Misc S2
 PRODUCT_PACKAGES += \
     librs_jni \
