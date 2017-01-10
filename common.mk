@@ -48,7 +48,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libsecril-client \
     libsamsung_symbols \
-    ril-wrapper
+    libsecril-shim
 
 # Misc S2
 PRODUCT_PACKAGES += \
