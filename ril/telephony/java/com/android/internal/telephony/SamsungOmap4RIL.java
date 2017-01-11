@@ -485,32 +485,6 @@ public class SamsungOmap4RIL extends RIL implements CommandsInterface {
                    " Exception: " + tr.toString());
             return;
         }
-
-        switch(response) {
-            case RIL_UNSOL_STK_PROACTIVE_COMMAND: 
-                Object ret = responseString(p);
-                if (RILJ_LOGD) unsljLogRet(response, ret);
-
-                if (mCatProCmdRegistrant != null) {
-                    mCatProCmdRegistrant.notifyRegistrant(
-                            new AsyncResult (null, ret, null));
-                } else {
-                    // The RIL will send a CAT proactive command before the
-                    // registrant is registered. Buffer it to make sure it
-                    // does not get ignored (and breaks CatService).
-                    mCatProCmdBuffer = ret;
-                }
-                break;
-
-            default:
-                // Rewind the Parcel
-                p.setDataPosition(dataPosition);
-
-                // Forward responses that we are not overriding to the super class
-                super.processUnsolicited(p);
-                return;
-        }
-
     }
 
     @Override
