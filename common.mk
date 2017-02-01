@@ -54,6 +54,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     gps.t1
 
+# Samsung Doze
+PRODUCT_PACKAGES += \
+    SamsungDoze
+
 # Misc S2
 PRODUCT_PACKAGES += \
     librs_jni \
@@ -66,7 +70,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.call_ring.multiple=false \
     ro.telephony.call_ring.delay=3000 \
     ro.bq.gpu_to_cpu_unsupported=1 \
-    camera2.portability.force_api=1
+    camera2.portability.force_api=1 \
+    config.disable_atlas=true
 #    com.ti.omap_enhancement=true \
 #    omap.enhancement=true \
 
