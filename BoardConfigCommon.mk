@@ -31,6 +31,12 @@ TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 MALLOC_IMPL := dlmalloc
 TARGET_NEEDS_TEXT_RELOCATIONS := true
 
+# RIL
+BOARD_PROVIDES_LIBRIL := true
+BOARD_MODEM_TYPE := xmm6260
+BOARD_RIL_CLASS := ../../../device/samsung/omap4-common/ril
+COMMON_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
+
 # SELinux
 BOARD_SEPOLICY_DIRS += \
     device/samsung/omap4-common/sepolicy

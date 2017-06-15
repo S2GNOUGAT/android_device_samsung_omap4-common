@@ -48,10 +48,9 @@ PRODUCT_PACKAGES += \
 
 # RIL
 PRODUCT_PACKAGES += \
+    libsamsung_symbols \
     libsecril-client \
-    libsecril-compat \
-    libsecril-shim \
-    libsecnativefeature
+    ril-wrapper
 
 # Misc S2
 PRODUCT_PACKAGES += \
@@ -61,6 +60,7 @@ PRODUCT_PACKAGES += \
     SamsungServiceMode
 
 PRODUCT_PROPERTY_OVERRIDES += \
+    ro.telephony.ril_class=SamsungOmap4RIL \
     ro.telephony.call_ring.multiple=false \
     ro.telephony.call_ring.delay=3000 \
     ro.bq.gpu_to_cpu_unsupported=1 \
