@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+# Set CPU
+TARGET_BOARD_OMAP_CPU := 4430
+
 # Include common omap4 makefile
 $(call inherit-product, hardware/ti/omap4/omap4.mk)
 
@@ -36,8 +39,7 @@ PRODUCT_PACKAGES += \
     libnetcmdiface \
     tinyplay \
     tinycap \
-    tinymix \
-    tinypcminfo
+    tinymix
 
 # Filesystem management tools
 PRODUCT_PACKAGES += \
@@ -46,17 +48,9 @@ PRODUCT_PACKAGES += \
 
 # RIL
 PRODUCT_PACKAGES += \
-    libsecril-client \
     libsamsung_symbols \
-    libsecril-shim
-
-# Legacy GPS
-PRODUCT_PACKAGES += \
-    gps.t1
-
-# Samsung Doze
-PRODUCT_PACKAGES += \
-    SamsungDoze
+    libsecril-client \
+    ril-wrapper
 
 # Misc S2
 PRODUCT_PACKAGES += \
@@ -70,8 +64,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.call_ring.multiple=false \
     ro.telephony.call_ring.delay=3000 \
     ro.bq.gpu_to_cpu_unsupported=1 \
-    camera2.portability.force_api=1 \
-    config.disable_atlas=true
+    camera2.portability.force_api=1
 #    com.ti.omap_enhancement=true \
 #    omap.enhancement=true \
 

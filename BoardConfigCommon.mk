@@ -17,6 +17,9 @@
 # Inherit common omap4 board config
 -include hardware/ti/omap4/BoardConfigCommon.mk
 
+# Build SGX KM
+-include hardware/ti/omap4/pvr-km.mk
+
 COMMON_PATH := device/samsung/omap4-common
 BOARD_VENDOR := samsung
 TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
@@ -25,16 +28,14 @@ TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
 # WITH_DEXPREOPT := true
 
 # Use dlmalloc
-MALLOC_SVELTE := true
+MALLOC_IMPL := dlmalloc
 TARGET_NEEDS_TEXT_RELOCATIONS := true
-TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
-LIBART_IMG_BASE := 0x30000000
 
 # RIL
 BOARD_PROVIDES_LIBRIL := true
 BOARD_MODEM_TYPE := xmm6260
 BOARD_RIL_CLASS := ../../../device/samsung/omap4-common/ril
-BOARD_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
+COMMON_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
 
 # SELinux
 BOARD_SEPOLICY_DIRS += \
